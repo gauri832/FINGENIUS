@@ -68,8 +68,8 @@
                                 <div 
                                     class="progress-bar {{ budget_item.status }}" 
                                     role="progressbar" 
-                                    style="width: {% if budget_item.percentage is defined and budget_item.percentage <= 100 %}{{ budget_item.percentage }}{% elif budget_item.percentage is defined %}100{% else %}0{% endif %}%" 
-                                    aria-valuenow="{% if budget_item.percentage is defined and budget_item.percentage <= 100 %}{{ budget_item.percentage }}{% elif budget_item.percentage is defined %}100{% else %}0{% endif %}" 
+                                    style="width: {% if budget_item.percentage is defined and budget_item.percentage <= 100 %}{{ budget_item.percentage|string }}{% elif budget_item.percentage is defined %}100{% else %}0{% endif %}%" 
+                                    aria-valuenow="{% if budget_item.percentage is defined and budget_item.percentage <= 100 %}{{ budget_item.percentage|string }}{% elif budget_item.percentage is defined %}100{% else %}0{% endif %}" 
                                     aria-valuemin="0" 
                                     aria-valuemax="100">
                                 </div>
