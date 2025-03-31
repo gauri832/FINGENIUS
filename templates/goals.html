@@ -84,8 +84,8 @@
                                                 {% elif progress < 75 %}bg-info
                                                 {% else %}bg-success{% endif %}" 
                                                 role="progressbar" 
-                                                style="width: {{ progress }}%" 
-                                                aria-valuenow="{{ progress }}" 
+                                                style="width: {% if progress is defined %}{{ progress }}{% else %}0{% endif %}%" 
+                                                aria-valuenow="{% if progress is defined %}{{ progress }}{% else %}0{% endif %}" 
                                                 aria-valuemin="0" 
                                                 aria-valuemax="100">
                                             </div>
