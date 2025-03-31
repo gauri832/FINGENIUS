@@ -1,0 +1,195 @@
+/* FinGenius Custom Styles */
+[data-bs-theme=dark] {
+    --bs-primary-rgb: 76, 175, 175;
+    --bs-success-rgb: 64, 192, 118;
+    --bs-info-rgb: 70, 159, 219;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main container */
+.main-content {
+    flex: 1;
+    padding: 2rem 0;
+}
+
+/* Navbar and footer */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.navbar-brand i {
+    color: var(--bs-info);
+}
+
+.navbar .nav-link.active {
+    color: var(--bs-info);
+    font-weight: 500;
+}
+
+footer {
+    margin-top: auto;
+    padding: 1rem 0;
+    font-size: 0.9rem;
+}
+
+/* Dashboard styles */
+.dashboard-stat {
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    height: 100%;
+    transition: transform 0.3s;
+}
+
+.dashboard-stat:hover {
+    transform: translateY(-5px);
+}
+
+.dashboard-stat h4 {
+    margin-bottom: 0.25rem;
+    font-size: 1.1rem;
+    color: var(--bs-light);
+}
+
+.dashboard-stat .stat-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+.dashboard-stat .stat-label {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.stat-income {
+    background-color: rgba(var(--bs-success-rgb), 0.2);
+    border-left: 4px solid var(--bs-success);
+}
+
+.stat-expenses {
+    background-color: rgba(var(--bs-danger-rgb), 0.2);
+    border-left: 4px solid var(--bs-danger);
+}
+
+.stat-savings {
+    background-color: rgba(var(--bs-primary-rgb), 0.2);
+    border-left: 4px solid var(--bs-primary);
+}
+
+.stat-investments {
+    background-color: rgba(var(--bs-info-rgb), 0.2);
+    border-left: 4px solid var(--bs-info);
+}
+
+/* Chart containers */
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin-bottom: 1.5rem;
+}
+
+/* Card styles */
+.card {
+    margin-bottom: 1.5rem;
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    font-weight: 500;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Form controls */
+.form-control:focus, .form-select:focus {
+    border-color: var(--bs-info);
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-info-rgb), 0.25);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--bs-info);
+    border-color: var(--bs-info);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: rgba(var(--bs-info-rgb), 0.9);
+    border-color: rgba(var(--bs-info-rgb), 0.9);
+}
+
+/* Login and Register pages */
+.auth-form-container {
+    max-width: 450px;
+    margin: 2rem auto;
+    padding: 2rem;
+}
+
+.auth-logo {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-logo i {
+    font-size: 3rem;
+    color: var(--bs-info);
+    margin-bottom: 1rem;
+}
+
+/* Transactions and data tables */
+.table th {
+    border-top: none;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Goal progress */
+.goal-progress {
+    height: 10px;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Financial suggestions */
+.suggestion-card {
+    transition: transform 0.3s;
+    height: 100%;
+}
+
+.suggestion-card:hover {
+    transform: translateY(-5px);
+}
+
+.suggestion-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+    .dashboard-stat {
+        margin-bottom: 1rem;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+}
+
+@media (max-width: 576px) {
+    .dashboard-stat .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .chart-container {
+        height: 200px;
+    }
+}

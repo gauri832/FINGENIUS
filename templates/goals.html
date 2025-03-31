@@ -1,0 +1,159 @@
+{% extends "layout.html" %}
+
+{% block title %}Financial Goals - FinGenius{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="h2 mb-4">Financial Goals</h1>
+    
+    <div id="alerts-container"></div>
+    
+    <div class="row">
+        <!-- Add Goal Form -->
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-trophy me-2"></i>Add New Goal
+                </div>
+                <div class="card-body">
+                    <form id="goal-form">
+                        <div class="mb-3">
+                            <label for="goal-name" class="form-label">Goal Name</label>
+                            <input type="text" class="form-control" id="goal-name" placeholder="Vacation, Emergency Fund, etc." required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="goal-target-amount" class="form-label">Target Amount ($)</label>
+                            <input type="number" class="form-control" id="goal-target-amount" step="0.01" min="0.01" placeholder="0.00" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="goal-current-amount" class="form-label">Current Amount ($)</label>
+                            <input type="number" class="form-control" id="goal-current-amount" step="0.01" min="0" placeholder="0.00">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="goal-target-date" class="form-label">Target Date</label>
+                            <input type="date" class="form-control" id="goal-target-date" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="goal-description" class="form-label">Description</label>
+                            <textarea class="form-control" id="goal-description" rows="3" placeholder="Goal details..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-plus-circle me-2"></i>Add Goal
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Goals List -->
+        <div class="col-lg-8">
+            <div class="row" id="goals-list">
+                {% if goals %}
+                    {% for goal in goals %}
+                        {% set progress = (goal.current_amount|float / goal.target_amount|float) * 100 if goal.target_amount|float > 0 else 0 %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">{{ goal.name }}</h5>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary" type="button" id="dropdownMenuButton-{{ goal.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton-{{ goal.id }}">
+                                            <li><a class="dropdown-item update-goal" href="#" data-id="{{ goal.id }}">Update Progress</a></li>
+                                            <li><a class="dropdown-item delete-goal" href="#" data-id="{{ goal.id }}">Delete Goal</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">{{ goal.description or 'No description provided.' }}</p>
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>Progress: ${{ goal.current_amount }} of ${{ goal.target_amount }}</span>
+                                            <span>{{ progress|round(1) }}%</span>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="progress-bar 
+                                                {% if progress < 25 %}bg-danger
+                                                {% elif progress < 50 %}bg-warning
+                                                {% elif progress < 75 %}bg-info
+                                                {% else %}bg-success{% endif %}" 
+                                                role="progressbar" 
+                                                style="width: {{ progress }}%" 
+                                                aria-valuenow="{{ progress }}" 
+                                                aria-valuemin="0" 
+                                                aria-valuemax="100">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% set target_date = goal.target_date|string %}
+                                    {% set today_date = now %}
+                                    {% set days_remaining = 0 %}
+                                    <!-- Simplified date display since we can't do complex date math in standard Jinja2 -->
+                                    <div class="d-flex justify-content-between">
+                                        <small class="text-muted">Target date: {{ goal.target_date }}</small>
+                                        <small class="text-muted">
+                                            <span>View progress details</span>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <button class="btn btn-sm btn-outline-primary update-goal" data-id="{{ goal.id }}">
+                                        <i class="bi bi-pencil"></i> Update Progress
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12 text-center">
+                        <p class="text-muted">No financial goals found. Add your first goal using the form.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Update Progress Modal -->
+    <div class="modal fade" id="progress-modal" tabindex="-1" aria-labelledby="progressModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="progressModalLabel">Update Goal Progress</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="progress-form">
+                        <input type="hidden" id="progress-goal-id">
+                        <div class="mb-3">
+                            <label class="form-label">Goal</label>
+                            <p class="form-control-static" id="progress-goal-name"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Target Amount</label>
+                            <p class="form-control-static" id="progress-target-amount"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label for="progress-current-amount" class="form-label">Current Amount ($)</label>
+                            <input type="number" class="form-control" id="progress-current-amount" step="0.01" min="0" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="document.getElementById('progress-form').dispatchEvent(new Event('submit'))">Update Progress</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/goals.js') }}"></script>
+{% endblock %}

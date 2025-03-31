@@ -1,0 +1,100 @@
+{% extends "layout.html" %}
+
+{% block title %}Budget Planner - FinGenius{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="h2 mb-4">Budget Planner</h1>
+    
+    <div id="alerts-container"></div>
+    
+    <div class="row">
+        <!-- Budget Form -->
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-calculator me-2"></i>Set Budget Limits
+                </div>
+                <div class="card-body">
+                    <form id="budget-form">
+                        <p class="text-muted mb-3">Set monthly budget limits for each expense category:</p>
+                        
+                        {% for category in categories %}
+                        <div class="mb-3">
+                            <label for="budget_{{ category }}" class="form-label">{{ category }}</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="budget_{{ category }}" name="budget_{{ category }}" placeholder="0.00" step="0.01" min="0">
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-save me-2"></i>Save Budget
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Budget Overview -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-bar-chart-fill me-2"></i>Budget vs. Actual Spending
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="budget-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-list-check me-2"></i>Budget Status by Category
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for budget_item in budget_data %}
+                        <div class="col-md-6 mb-3 budget-item" data-category="{{ budget_item.category }}">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>{{ budget_item.category }}</span>
+                                <span class="budget-percent {{ 'text-danger' if budget_item.percentage > 100 else 'text-warning' if budget_item.percentage > 70 else 'text-success' }}">
+                                    {{ budget_item.percentage|round(1) }}%
+                                </span>
+                            </div>
+                            <div class="progress">
+                                <div 
+                                    class="progress-bar {{ budget_item.status }}" 
+                                    role="progressbar" 
+                                    style="width: {{ budget_item.percentage if budget_item.percentage <= 100 else 100 }}%" 
+                                    aria-valuenow="{{ budget_item.percentage if budget_item.percentage <= 100 else 100 }}" 
+                                    aria-valuemin="0" 
+                                    aria-valuemax="100">
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-1">
+                                <small class="spent-amount">${{ budget_item.spent_amount }}</small>
+                                <small>of ${{ budget_item.budget_amount }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if not budget_data %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Set your budget limits for each category to start tracking your spending against your budget.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/budget.js') }}"></script>
+{% endblock %}

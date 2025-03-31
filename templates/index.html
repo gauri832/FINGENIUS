@@ -1,0 +1,234 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard - FinGenius{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">Dashboard</h1>
+        <div>
+            <span class="badge bg-info">Welcome, {{ username }}!</span>
+        </div>
+    </div>
+    
+    <div id="dashboard-alerts"></div>
+    
+    <!-- Financial Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="dashboard-stat stat-income">
+                <h4><i class="bi bi-wallet2 me-2"></i>Income</h4>
+                <p class="stat-value" id="total-income">{{ total_income | tojson }}</p>
+                <p class="stat-label">Total Income</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="dashboard-stat stat-expenses">
+                <h4><i class="bi bi-cash-coin me-2"></i>Expenses</h4>
+                <p class="stat-value" id="total-expenses">{{ total_expenses | tojson }}</p>
+                <p class="stat-label">Total Expenses</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="dashboard-stat stat-savings">
+                <h4><i class="bi bi-piggy-bank me-2"></i>Savings</h4>
+                <p class="stat-value" id="savings-rate">0%</p>
+                <p class="stat-label">Savings Rate</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-stat stat-investments">
+                <h4><i class="bi bi-graph-up me-2"></i>Net Worth</h4>
+                <p class="stat-value" id="net-worth">{{ net_worth | tojson }}</p>
+                <p class="stat-label">Total Net Worth</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-4 mb-md-0">
+            <div class="card h-100">
+                <div class="card-header">
+                    <i class="bi bi-cash-coin me-2"></i>Expense Breakdown
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="expense-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <i class="bi bi-wallet2 me-2"></i>Income Sources
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="income-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Investment Portfolio Chart -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-graph-up me-2"></i>Investment Portfolio
+                </div>
+                <div class="card-body" id="investment-chart-container">
+                    <div class="chart-container">
+                        <canvas id="investment-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity Row -->
+    <div class="row">
+        <!-- Recent Expenses -->
+        <div class="col-md-6 mb-4 mb-md-0">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="bi bi-cash-coin me-2"></i>Recent Expenses
+                    </div>
+                    <a href="{{ url_for('expense_tracker') }}" class="btn btn-sm btn-outline-info">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Category</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if expenses %}
+                                    {% for expense in expenses %}
+                                    <tr>
+                                        <td>{{ expense.description }}</td>
+                                        <td>${{ expense.amount }}</td>
+                                        <td><span class="badge bg-info">{{ expense.category }}</span></td>
+                                        <td>{{ expense.date }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No recent expenses</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Income -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="bi bi-wallet2 me-2"></i>Recent Income
+                    </div>
+                    <a href="{{ url_for('income_tracker') }}" class="btn btn-sm btn-outline-info">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Category</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if incomes %}
+                                    {% for income in incomes %}
+                                    <tr>
+                                        <td>{{ income.description }}</td>
+                                        <td>${{ income.amount }}</td>
+                                        <td><span class="badge bg-success">{{ income.category }}</span></td>
+                                        <td>{{ income.date }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No recent income entries</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Goals Progress Row -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="bi bi-trophy me-2"></i>Financial Goals Progress
+                    </div>
+                    <a href="{{ url_for('goal_tracker') }}" class="btn btn-sm btn-outline-info">
+                        Manage Goals
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if goals %}
+                        <div class="row">
+                            {% for goal in goals[:3] %}
+                                <div class="col-md-4 mb-3">
+                                    <h6>{{ goal.name }}</h6>
+                                    {% set progress = (goal.current_amount|float / goal.target_amount|float) * 100 if goal.target_amount|float > 0 else 0 %}
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <small>${{ goal.current_amount }} of ${{ goal.target_amount }}</small>
+                                        <small>{{ progress|round(1) }}%</small>
+                                    </div>
+                                    <div class="progress goal-progress">
+                                        <div class="progress-bar 
+                                            {% if progress < 25 %}bg-danger
+                                            {% elif progress < 50 %}bg-warning
+                                            {% elif progress < 75 %}bg-info
+                                            {% else %}bg-success{% endif %}" 
+                                            role="progressbar" 
+                                            style="width: {{ progress }}%" 
+                                            aria-valuenow="{{ progress }}" 
+                                            aria-valuemin="0" 
+                                            aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-center">No financial goals set. <a href="{{ url_for('goal_tracker') }}">Create your first goal!</a></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
