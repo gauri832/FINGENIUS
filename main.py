@@ -1,3 +1,10 @@
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file if it exists (for local development)
+if os.path.exists('.env'):
+    load_dotenv()
+
 from app import app, db
 
 with app.app_context():
