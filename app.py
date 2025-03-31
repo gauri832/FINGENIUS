@@ -23,7 +23,8 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "fingenius-dev-key")
 
 # Configure the database
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+# Use DATABASE_URL environment variable, or fallback to a SQLite database for local testing
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///finance_app.db")
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
