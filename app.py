@@ -121,6 +121,8 @@ def login():
         
         if user and check_password_hash(user.password_hash, password):
             login_user(user)
+            # Store username in session for easy access in templates
+            session['username'] = user.username
             flash('Login successful!', 'success')
             return redirect(url_for('index'))
         else:
@@ -177,7 +179,10 @@ def register():
 @app.route('/logout')
 @login_required
 def logout():
+    # Clear Flask-Login's session
     logout_user()
+    # Clear any additional items we stored in session
+    session.pop('username', None)
     flash('You have been logged out', 'success')
     return redirect(url_for('login'))
 
